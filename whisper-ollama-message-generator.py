@@ -10,7 +10,7 @@ from langchain_community.embeddings import OllamaEmbeddings
 from langchain_community.vectorstores import Chroma
 from langchain.chains import RetrievalQA
 from langchain_community.document_loaders.telegram import text_to_docs
-import joblib
+
 
 load_dotenv()
 
@@ -21,8 +21,11 @@ group_id = os.getenv('GROUP_ID')
 ollama_path= os.getenv('OLLAMA_PATH')
 model_name = os.getenv('MODEL_NAME')
 query = os.getenv('QUERY') 
+bot_token = os.getenv('BOT_TOKEN')
+chat_id = os.getenv('CHAT_ID')
 
 def generate_message():
+
     consumer = KafkaConsumer(
         source_topic_name,
         bootstrap_servers=bootstrap_servers,
@@ -96,11 +99,14 @@ def generate_message():
 
     response = qachain({"query": query})
     print(response)
+    producer.send(destination_topic_name, value=response)
+    producer.flush()
+    
 
-schedule.every().day.at("00:00").do(generate_message)
+schedule.every().day.at("12:00").do(generate_message)
 
 if __name__ == "__main__":
     generate_message()
-    # while True:
-    #     schedule.run_pending()
-    #     time.sleep(1) 
+    while True:
+        schedule.run_pending()
+        time.sleep(1) 

@@ -1,0 +1,22 @@
+version: '3.8'
+services:
+  ollama:
+    image: ollama/ollama:latest
+    container_name: ollama-server
+    ports:
+      - "11434:11434" 
+    volumes:
+      - ollama_data:/root/.ollama 
+    # command: >
+
+    # Uncomment the lines below if you are using an Nvidia GPU
+    # environment:
+    #   NVIDIA_VISIBLE_DEVICES: all
+    #   NVIDIA_DRIVER_CAPABILITIES: compute,utility
+    # device_requests:
+    #   - driver: nvidia
+    #     count: 1
+    #     capabilities: [gpu]
+
+volumes:
+  ollama_data:
